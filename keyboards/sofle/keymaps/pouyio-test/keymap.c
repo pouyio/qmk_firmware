@@ -177,13 +177,14 @@ static void print_status_narrow(void) {
         oled_write_ln_P(PSTR("MAC"), false);
     }
 
-    switch (get_highest_layer(default_layer_state)) {
-        case _QWERTY:
-            oled_write_ln_P(PSTR("Qwrt"), false);
-            break;
-        default:
-            oled_write_P(PSTR("Undef"), false);
-    }
+    // switch (get_highest_layer(default_layer_state)) {
+    //     case _QWERTY:
+    //         oled_write_ln_P(PSTR("Qwrt"), false);
+    //         break;
+    //     default:
+    //         oled_write_P(PSTR("Undef"), false);
+    // }
+    oled_write_P(PSTR("\n\n"), false);
     oled_write_P(PSTR("\n\n"), false);
     // Print current layer
     oled_write_ln_P(PSTR("LAYER"), false);
