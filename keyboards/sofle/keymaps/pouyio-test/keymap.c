@@ -16,12 +16,12 @@ enum custom_keycodes {
     KC_ADJUST,
     KC_PRVWD,
     KC_NXTWD,
-    // KC_LSTRT,
-    // KC_LEND,
     KC_DLINE,
     KC_WBSPC, // word backspace
     KC_WDEL, // word delete
-    KC_CUSTOMLT // < due to bug mac/linux not using the same key
+    KC_C_LT, // custom less than: < due to bug mac/linux not using the same key
+    KC_C_WINDOW, // custom window: change window
+    KC_C_TAB, // custom change tab window,
 };
 
 
@@ -52,9 +52,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * ,-----------------------------------------.                    ,-----------------------------------------.
  * |      |  !   |  "   |   #  |   $  |   %  |                    |  &   |  /   |  (   |  )   |   =  |  ?   |
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
- * |      |      |      |      |      |      |                    |      |   <  |   [  |   ]  |   +  |WRDDEL|
+ * |      |      |     |PRV_WPC|NXT_WPC|     |                    |      |   <  |   [  |   ]  |   +  |WRDDEL|
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
- * |      |      |      |      |      |      |-------.    ,-------|      |      |   {  |   }  |   *  |   Ç  |
+ * |      |      |  |KC_C_TAB|KC_C_WINDOW|   |-------.    ,-------|      |      |   {  |   }  |   *  |   Ç  |
  * |------+------+------+------+------+------|       |    |       |------+------+------+------+------+------|
  * |      |  ¡   |      |  ¿   |   ^  |      |-------|    |-------|   `  |      |   ;  |   :  |   _  |      |
  * `-----------------------------------------/       /     \      \-----------------------------------------'
@@ -64,8 +64,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
 [_LOWER] = LAYOUT( \
   _______,  S(ES_1), S(ES_2) , ALGR(ES_3), S(ES_4) ,S(ES_5),                    S(ES_6),   S(ES_7),   S(ES_8),   S(ES_9),  S(ES_0),  S(ES_QUOT),\
-  _______,  _______, _______,  _______, _______, _______,                       _______, KC_CUSTOMLT,  ALGR(ES_GRV),  ALGR(ES_PLUS),  KC_RBRC,  KC_WBSPC, \
-  _______,   _______, _______,  _______, _______, _______,                       _______, _______, ALGR(ES_ACUT), ALGR(ES_CCED), KC_RCBR, KC_PIPE, \
+  _______,  _______, _______,  LCTL(LGUI(KC_J)), LCTL(LGUI(KC_K)), _______,                       _______, KC_C_LT,  ALGR(ES_GRV),  ALGR(ES_PLUS),  KC_RBRC,  KC_WBSPC, \
+  _______,   _______, _______,KC_C_TAB,KC_C_WINDOW, _______,                       _______, _______, ALGR(ES_ACUT), ALGR(ES_CCED), KC_RCBR, KC_PIPE, \
   _______,   KC_EQL, _______,  KC_PLUS, KC_LCBR, _______, _______,       _______, ES_GRV, _______, S(KC_COMM), S(KC_DOT), S(ES_MINS), _______, \
                        _______, _______, _______, _______, _______,       _______, _______, KC_WDEL, _______, _______\
 ),
@@ -200,6 +200,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 layer_on(_LOWER);
                 update_tri_layer(_LOWER, _RAISE, _ADJUST);
             } else {
+                unregister_mods(MOD_LGUI);
+                unregister_mods(MOD_LCTL);
+                unregister_mods(MOD_LALT);
                 layer_off(_LOWER);
                 update_tri_layer(_LOWER, _RAISE, _ADJUST);
             }
@@ -220,6 +223,32 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 layer_off(_ADJUST);
             }
             return false;
+        case KC_C_WINDOW:
+            if (record->event.pressed) {
+                if (keymap_config.swap_lctl_lgui) {
+                    register_mods(MOD_LALT);
+                    register_code(KC_TAB);
+                } else {
+                    register_mods(MOD_LGUI);
+                    register_code(KC_TAB);
+                }
+            } else {
+                    unregister_code(KC_TAB);
+            }
+            break;
+        case KC_C_TAB:
+            if (record->event.pressed) {
+                if (keymap_config.swap_lctl_lgui) {
+                    register_mods(MOD_LCTL);
+                    register_code(KC_TAB);
+                } else {
+                    register_mods(MOD_LCTL);
+                    register_code(KC_TAB);
+                }
+            } else {
+                    unregister_code(KC_TAB);
+            }
+            break;
         case KC_PRVWD:
             if (record->event.pressed) {
                 if (keymap_config.swap_lctl_lgui) {
@@ -296,7 +325,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 }
             }
             break;
-        case KC_CUSTOMLT:
+        case KC_C_LT:
              if (record->event.pressed) {
                 if (keymap_config.swap_lctl_lgui) {
                     register_code(KC_NUBS);
