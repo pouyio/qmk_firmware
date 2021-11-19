@@ -21,7 +21,7 @@ enum custom_keycodes {
     KC_WDEL, // word delete
     KC_C_LT, // custom less than: < due to bug mac/linux not using the same key
     KC_C_WINDOW, // custom window: change window
-    KC_C_TAB, // custom change tab window,
+    KC_C_TAB // custom change tab window,
 };
 
 // PRV_WPC: previous workspace, combo for ctrl+super+j
@@ -67,9 +67,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
  * |      |      |     |PRV_WPC|NXT_WPC|     |                    |      |   <  |   [  |   ]  |   +  |WRDDEL|
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
- * |      |      |  |KC_C_TAB|KC_C_WINDOW|   |-------.    ,-------|      |      |   {  |   }  |   *  |   Ç  |
+ * |      |  ^   |  |KC_C_TAB|KC_C_WINDOW|   |-------.    ,-------|      |      |   {  |   }  |   *  |   Ç  |
  * |------+------+------+------+------+------|       |    |       |------+------+------+------+------+------|
- * |      |  ¡   |      |  ¿   |   ^  |      |-------|    |-------|   `  |      |   ;  |   :  |   _  |      |
+ * |      |  ¡   |   ¿  |     |   ^  |      |-------|    |-------|   `  |      |   ;  |   :  |   _  |      |
  * `-----------------------------------------/       /     \      \-----------------------------------------'
  *            |      |      |      |      | /       /       \      \  |      |  WDEL |      |      |
  *            |      |      |      |      |/       /         \      \ |      |       |      |      |
@@ -78,8 +78,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 [_LOWER] = LAYOUT( \
   _______,  S(ES_1), S(ES_2) , ALGR(ES_3), S(ES_4) ,S(ES_5),                    S(ES_6),   S(ES_7),   S(ES_8),   S(ES_9),  S(ES_0),  S(ES_QUOT),\
   _______,  _______, _______,  LCTL(LGUI(KC_J)), LCTL(LGUI(KC_K)), _______,                       _______, KC_C_LT,  ALGR(ES_GRV),  ALGR(ES_PLUS),  KC_RBRC,  KC_WBSPC, \
-  _______,   _______, _______,KC_C_TAB,KC_C_WINDOW, _______,                       _______, _______, ALGR(ES_ACUT), ALGR(ES_CCED), KC_RCBR, KC_PIPE, \
-  _______,   KC_EQL, _______,  KC_PLUS, KC_LCBR, _______, _______,       _______, ES_GRV, _______, S(KC_COMM), S(KC_DOT), S(ES_MINS), _______, \
+  _______,   KC_LCBR, _______,_______,KC_C_WINDOW, _______,                       _______, _______, ALGR(ES_ACUT), ALGR(ES_CCED), KC_RCBR, KC_PIPE, \
+  _______,   KC_EQL, KC_PLUS,  _______, KC_C_TAB, _______, _______,       _______, ES_GRV, _______, S(KC_COMM), S(KC_DOT), S(ES_MINS), _______, \
                        _______, _______, _______, _______, _______,       _______, _______, KC_WDEL, _______, _______\
 ),
 /* RAISE
