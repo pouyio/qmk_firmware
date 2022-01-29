@@ -30,14 +30,20 @@ enum custom_keycodes {
 
 enum tap_dances {
     SFT_CAP,
+    DOUBLE_KC_EQL,
+    DOUBLE_ES_QUOT,
 };
 
 // Tap Dance definitions
 qk_tap_dance_action_t tap_dance_actions[] = {
-    [SFT_CAP] = ACTION_TAP_DANCE_DOUBLE(KC_LSFT, KC_CAPS) // shift on tap, caps lock on double tap
+    [SFT_CAP] = ACTION_TAP_DANCE_DOUBLE(KC_LSFT, KC_CAPS), // shift on tap, caps lock on double tap
+    [DOUBLE_KC_EQL] = ACTION_TAP_DANCE_DOUBLE(S(ES_1), KC_EQL), // open exclamation mark on tap, close exclamation mark on double tap
+    [DOUBLE_ES_QUOT] = ACTION_TAP_DANCE_DOUBLE(S(ES_QUOT), KC_PLUS) // open question mark on tap, close question mark on double tap
 };
 
 #define TD_SFT_CAP TD(SFT_CAP)
+#define TD_DOUBLE_KC_EQL TD(DOUBLE_KC_EQL)
+#define TD_DOUBLE_ES_QUOT TD(DOUBLE_ES_QUOT)
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 /*
@@ -54,6 +60,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  *            |      | LGUI | LAlt |LOWER | / Space /       \Enter \  |RAISE | FDel |      | RAlt |
  *            |      |      |      |      |/       /         \      \ |      |      |      |      |
  *            `----------------------------------'           '------''---------------------------'
+ * 2x(Shift) = Bloq mayus
  */
 [_QWERTY] = LAYOUT( \
   KC_ESC,   KC_1,   KC_2,    KC_3,    KC_4,    KC_5,                     KC_6,    KC_7,    KC_8,    KC_9,    KC_0,  KC_MINS, \
@@ -64,13 +71,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 ),
 /* LOWER
  * ,-----------------------------------------.                    ,-----------------------------------------.
- * |      |  !   |  "   |   #  |   $  |   %  |                    |  &   |  /   |  (   |  )   |   =  |  ?   |
+ * |     |! 2x(¡)|  "   |   #  |   $  |   %  |                    |  &   |  /   |  (   |  )   |   = |? 2x(¿)|
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
  * |      |      |     |PRV_WPC|NXT_WPC|     |                    |      |   <  |   [  |   ]  |   +  |WRDDEL|
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
  * |      |      |      |      |KC_C_WINDOW| |-------.    ,-------|      |      |   {  |   }  |   *  |   Ç  |
  * |------+------+------+------+------+------|       |    |       |------+------+------+------+------+------|
- * |      |  ¡   |¿|KC_C_TAB_prev|KC_C_TAB|  |-------|    |-------|   `  |      |   ;  |   :  |   _  |      |
+ * |      |      | |KC_C_TAB_prev|KC_C_TAB|  |-------|    |-------|   `  |      |   ;  |   :  |   _  |      |
  * `-----------------------------------------/       /     \      \-----------------------------------------'
  *            |      |      |      |      | /       /       \      \  |      |  WDEL |      |      |
  *            |      |      |      |      |/       /         \      \ |      |       |      |      |
@@ -78,10 +85,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  *  SHIFT(`) = ^
  */
 [_LOWER] = LAYOUT( \
-  _______,  S(ES_1), S(ES_2) , ALGR(ES_3), S(ES_4) ,S(ES_5),                    S(ES_6),   S(ES_7),   S(ES_8),   S(ES_9),  S(ES_0),  S(ES_QUOT),\
+  _______,  TD_DOUBLE_KC_EQL, S(ES_2) , ALGR(ES_3), S(ES_4) ,S(ES_5),                    S(ES_6),   S(ES_7),   S(ES_8),   S(ES_9),  S(ES_0),  TD_DOUBLE_ES_QUOT,\
   _______,  _______, _______,  LCTL(LGUI(KC_J)), LCTL(LGUI(KC_K)), _______,                       _______, KC_C_LT,  ALGR(ES_GRV),  ALGR(ES_PLUS),  KC_RBRC,  KC_WBSPC, \
   _______,  _______, _______,_______,KC_C_WINDOW, _______,                       _______, _______, ALGR(ES_ACUT), ALGR(ES_CCED), KC_RCBR, KC_PIPE, \
-  _______, KC_EQL, KC_PLUS,KC_C_TAB_PREV,KC_C_TAB, _______, _______,       _______, ES_GRV, _______, S(KC_COMM), S(KC_DOT), S(ES_MINS), _______, \
+  _______,  _______, _______,KC_C_TAB_PREV,KC_C_TAB, _______, _______,       _______, ES_GRV, _______, S(KC_COMM), S(KC_DOT), S(ES_MINS), _______, \
                        _______, _______, _______, _______, _______,       _______, _______, KC_WDEL, _______, _______\
 ),
 /* RAISE
