@@ -40,7 +40,7 @@ qk_tap_dance_action_t tap_dance_actions[] = {
     [SFT_CAP] = ACTION_TAP_DANCE_DOUBLE(KC_LSFT, KC_CAPS), // shift on tap, caps lock on double tap
     [DOUBLE_KC_EQL] = ACTION_TAP_DANCE_DOUBLE(S(ES_1), KC_EQL), // open exclamation mark on tap, close exclamation mark on double tap
     [DOUBLE_ES_QUOT] = ACTION_TAP_DANCE_DOUBLE(S(ES_QUOT), KC_PLUS), // open question mark on tap, close question mark on double tap
-    [DOUBLE_ES_NTIL] = ACTION_TAP_DANCE_DOUBLE(ES_NTIL, ALGR(ES_NTIL)) // open question mark on tap, close question mark on double tap
+    [DOUBLE_ES_NTIL] = ACTION_TAP_DANCE_DOUBLE(ES_NTIL, ALGR(ES_NTIL)) // ñ on tap, ~ on double tap
 };
 
 #define TD_SFT_CAP TD(SFT_CAP)
