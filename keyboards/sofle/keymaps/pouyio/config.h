@@ -8,4 +8,4 @@ for more options.
 #define OLED_TIMEOUT 10000
 #define OLED_BRIGHTNESS 190
 #undef TAPPING_TERM
-#define TAPPING_TERM 135
+#define TAPPING_TERM 150
