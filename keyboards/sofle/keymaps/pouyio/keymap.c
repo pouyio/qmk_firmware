@@ -25,8 +25,8 @@ enum custom_keycodes {
     KC_C_TAB_PREV // custom change tab window prev,
 };
 
-// PRV_WPC: previous workspace, combo for ctrl+super+j
-// NXT_WPC: next workspace, combo for ctrl+super+k
+// PRV_WPC: previous workspace, combo for ctrl+super+left
+// NXT_WPC: next workspace, combo for ctrl+super+right
 
 enum tap_dances {
     SFT_CAP,
@@ -89,7 +89,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
 [_LOWER] = LAYOUT( \
   _______,  TD_DOUBLE_KC_EQL, S(ES_2) , ALGR(ES_3), S(ES_4) ,S(ES_5),                    S(ES_6),   S(ES_7),   S(ES_8),   S(ES_9),  S(ES_0),  TD_DOUBLE_ES_QUOT,\
-  _______,  _______, _______,  LCTL(LGUI(KC_J)), LCTL(LGUI(KC_K)), _______,                       _______, KC_C_LT,  ALGR(ES_GRV),  ALGR(ES_PLUS),  KC_RBRC,  KC_WBSPC, \
+  _______,  _______, _______,  LCTL(LGUI(KC_LEFT)), LCTL(LGUI(KC_RGHT)), _______,                       _______, KC_C_LT,  ALGR(ES_GRV),  ALGR(ES_PLUS),  KC_RBRC,  KC_WBSPC, \
   _______,  _______, _______,_______,KC_C_WINDOW, _______,                       _______, _______, ALGR(ES_ACUT), ALGR(ES_CCED), KC_RCBR, KC_PIPE, \
   _______,  _______, _______,KC_C_TAB_PREV,KC_C_TAB, _______, _______,       _______, ES_GRV, _______, S(KC_COMM), S(KC_DOT), S(ES_MINS), _______, \
                        _______, _______, _______, _______, _______,       _______, _______, KC_WDEL, _______, _______\
