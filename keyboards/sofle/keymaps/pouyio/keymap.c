@@ -16,37 +16,27 @@ enum custom_keycodes {
     KC_ADJUST,
     KC_PRVWD,
     KC_NXTWD,
-    KC_DLINE,
     KC_WBSPC, // word backspace
     KC_WDEL, // word delete
     KC_C_LT, // custom less than: < due to bug mac/linux not using the same key
-    KC_C_WINDOW, // custom window: change window
-    KC_C_TAB, // custom change tab window,
-    KC_C_TAB_PREV // custom change tab window prev,
+    KC_C_WINDOW, // change window (win: alt+tab, mac: gui+tab)
+    KC_C_TAB, // change tab (ctrl+tab)
+    KC_C_TAB_PREV // change tab window prev (shift+ctrl+tab),
 };
-
-// PRV_WPC: previous workspace, combo for ctrl+super+left
-// NXT_WPC: next workspace, combo for ctrl+super+right
 
 enum tap_dances {
     SFT_CAP,
-    DOUBLE_KC_EQL,
-    DOUBLE_ES_QUOT,
-    DOUBLE_ES_NTIL,
 };
 
 // Tap Dance definitions
 qk_tap_dance_action_t tap_dance_actions[] = {
-    [SFT_CAP] = ACTION_TAP_DANCE_DOUBLE(KC_LSFT, KC_CAPS), // shift on tap, caps lock on double tap
-    [DOUBLE_KC_EQL] = ACTION_TAP_DANCE_DOUBLE(S(ES_1), KC_EQL), // open exclamation mark on tap, close exclamation mark on double tap
-    [DOUBLE_ES_QUOT] = ACTION_TAP_DANCE_DOUBLE(S(ES_QUOT), KC_PLUS), // open question mark on tap, close question mark on double tap
-    [DOUBLE_ES_NTIL] = ACTION_TAP_DANCE_DOUBLE(ES_NTIL, ALGR(ES_NTIL)) // ñ on tap, ~ on double tap
+    [SFT_CAP] = ACTION_TAP_DANCE_DOUBLE(KC_LSFT, KC_CAPS) // shift on tap, caps lock on double tap
 };
 
 #define TD_SFT_CAP TD(SFT_CAP)
-#define TD_DOUBLE_KC_EQL TD(DOUBLE_KC_EQL)
-#define TD_DOUBLE_ES_QUOT TD(DOUBLE_ES_QUOT)
-#define TD_ES_NTIL TD(DOUBLE_ES_NTIL)
+
+#define PRV_WPC LCTL(LGUI(KC_LEFT)) // previous workspace, combo for ctrl+super+left
+#define NXT_WPC LCTL(LGUI(KC_RGHT)) // next workspace, combo for ctrl+super+right
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 /*
@@ -56,25 +46,24 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
  * |  Tab |   Q  |   W  |   E  |   R  |   T  |                    |   Y  |   U  |   I  |   O  |   P  | Bspc |
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
- * |LShift|   A  |   S  |   D  |   F  |   G  |-------.    ,-------|   H  |   J  |   K  |   L |Ñ 2x(~)|  ´   |
+ * |LShift|   A  |   S  |   D  |   F  |   G  |-------.    ,-------|   H  |   J  |   K  |   L |   Ñ   |  ´   |
  * |------+------+------+------+------+------|  Mute |    |  Play |------+------+------+------+------+------|
  * | LCTR |   Z  |   X  |   C  |   V  |   B  |-------|    |-------|   N  |   M  |   ,  |   .  |   -  |RShift|
  * `-----------------------------------------/       /     \      \-----------------------------------------'
  *            |      | LGUI | LAlt |LOWER | / Space /       \Enter \  |RAISE | FDel |      |      |
  *            |      |      |      |      |/       /         \      \ |      |      |      |      |
  *            `----------------------------------'           '------''---------------------------'
- * 2x(Shift) = Bloq mayus
  */
 [_QWERTY] = LAYOUT( \
   KC_ESC,   KC_1,   KC_2,    KC_3,    KC_4,    KC_5,                     KC_6,    KC_7,    KC_8,    KC_9,    KC_0,  KC_MINS, \
   KC_TAB,   KC_Q,   KC_W,    KC_E,    KC_R,    KC_T,                     KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,  KC_BSPC, \
-  TD_SFT_CAP,   KC_A,   KC_S,    KC_D,    KC_F,    KC_G,                     KC_H,    KC_J,    KC_K,    KC_L, TD_ES_NTIL,  KC_QUOT, \
+  TD_SFT_CAP,  KC_A,  KC_S,  KC_D,    KC_F,    KC_G,                     KC_H,    KC_J,    KC_K,    KC_L,  ES_NTIL, KC_QUOT, \
   KC_LCTRL,  KC_Z,   KC_X,    KC_C,    KC_V,    KC_B, KC_MUTE,     KC_MPLY,KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH,  KC_RSFT, \
                  XXXXXXX,KC_LGUI,KC_LALT, KC_LOWER, KC_SPC,      KC_ENT,  KC_RAISE, KC_DELETE,    XXXXXXX, XXXXXXX\
 ),
 /* LOWER
  * ,-----------------------------------------.                    ,-----------------------------------------.
- * |     |! 2x(¡)|  "   |   #  |   $  |   %  |                    |  &   |  /   |  (   |  )   |   = |? 2x(¿)|
+ * |      |  !   |  "   |   #  |   $  |   %  |                    |  &   |  /   |  (   |  )   |   = |   ?   |
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
  * |      |      |     |PRV_WPC|NXT_WPC|     |                    |      |   <  |   [  |   ]  |   +  |WRDDEL|
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
@@ -88,8 +77,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  *  SHIFT(`) = ^
  */
 [_LOWER] = LAYOUT( \
-  _______,  TD_DOUBLE_KC_EQL, S(ES_2) , ALGR(ES_3), S(ES_4) ,S(ES_5),                    S(ES_6),   S(ES_7),   S(ES_8),   S(ES_9),  S(ES_0),  TD_DOUBLE_ES_QUOT,\
-  _______,  _______, _______,  LCTL(LGUI(KC_LEFT)), LCTL(LGUI(KC_RGHT)), _______,                       _______, KC_C_LT,  ALGR(ES_GRV),  ALGR(ES_PLUS),  KC_RBRC,  KC_WBSPC, \
+  _______,  S(ES_1), S(ES_2) , ALGR(ES_3), S(ES_4) ,S(ES_5),                    S(ES_6),   S(ES_7),   S(ES_8),   S(ES_9),  S(ES_0),  S(ES_QUOT),\
+  _______,  _______, _______,  PRV_WPC,    NXT_WPC, _______,                    _______, KC_C_LT,  ALGR(ES_GRV), ALGR(ES_PLUS), KC_RBRC, KC_WBSPC,\
   _______,  _______, _______,_______,KC_C_WINDOW, _______,                       _______, _______, ALGR(ES_ACUT), ALGR(ES_CCED), KC_RCBR, KC_PIPE, \
   _______,  _______, _______,KC_C_TAB_PREV,KC_C_TAB, _______, _______,       _______, ES_GRV, _______, S(KC_COMM), S(KC_DOT), S(ES_MINS), _______, \
                        _______, _______, _______, _______, _______,       _______, _______, KC_WDEL, _______, _______\
@@ -98,30 +87,30 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * ,----------------------------------------.                     ,-----------------------------------------.
  * |      |  |   |  @   |  #   |   $  |   %  |                    |   &  |   /  |  (   |   )  |   =  |  ?   |
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
- * |      |      |      |   €  |      |      |                    |      | PWrd |  Up  | NWrd | DLine| FDel |
+ * |      |      |      |      |      |      |                    |      | PWrd |  Up  | NWrd |      | FDel |
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
- * |      |      |      |      |      |      |-------.    ,-------|      | Left | Down | Rigth|  Del | Bspc |
+ * |      |      |      |      |      |      |-------.    ,-------|      | Left | Down | Rigth|      |      |
  * |------+------+------+------+------+------|       |    |       |------+------+------+------+------+------|
- * |      |      |      |      |      |      |-------|    |-------|      | LStr |      | LEnd |      | Shift|
+ * |      |      |      |      |      |      |-------|    |-------|      | LStr |      | LEnd |      |      |
  * `-----------------------------------------/       /     \      \-----------------------------------------'
  *            |      |      |      |      |/       /         \      \ |      |      |      |      |
  *            |      |      |      |      | /       /       \      \  |      |      |      |      |
  *            `----------------------------------'           '------''---------------------------'
  */
 [_RAISE] = LAYOUT( \
-  _______, ALGR(ES_1) , ALGR(ES_2) , ALGR(ES_3) , S(ES_4) , S(ES_5),          S(ES_6),  S(ES_7)  , S(ES_8),  S(ES_9) ,  S(ES_0) ,S(ES_QUOT), \
-  _______, _______, _______, ALGR(ES_E),  _______, _______,                   KC_PGUP, KC_PRVWD,   KC_UP, KC_NXTWD,KC_DLINE, KC_DELETE, \
-  _______, _______,  _______, _______,  _______, _______,                       KC_PGDN,  KC_LEFT, KC_DOWN, KC_RGHT,  KC_DEL, KC_BSPC, \
-  _______,_______, _______, _______, _______, _______,  _______,       _______,  _______, KC_HOME, _______, KC_END,  _______, _______, \
+  _______,ALGR(ES_1),ALGR(ES_2),ALGR(ES_3),S(ES_4),S(ES_5),          S(ES_6),  S(ES_7)  , S(ES_8),  S(ES_9) ,  S(ES_0) ,S(ES_QUOT), \
+  _______, _______, _______, _______, _______, _______,               KC_PGUP, KC_PRVWD,    KC_UP, KC_NXTWD, _______, KC_DELETE, \
+  _______, _______, _______, _______, _______, _______,                       KC_PGDN,  KC_LEFT, KC_DOWN, KC_RGHT, _______, _______, \
+  _______, _______, _______, _______, _______, _______,  _______,       _______,  _______, KC_HOME, _______, KC_END,  _______, _______, \
                     _______, _______, _______, _______, _______,       _______, _______, _______, _______, _______ \
 ),
 /* ADJUST
  * ,-----------------------------------------.                    ,-----------------------------------------.
- * |      |      |      |      |      |      |                    |      |      |      |      |      |      |
+ * |      |   ¡  |      |      |      |      |                    |      |   \  |      |      |      |   ¿  |
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
- * | RESET|      |QWERTY|      |      |      |                    |      |      |      |      |      |altFDl|
+ * | RESET|      |QWERTY|   €  |      |      |                    |      |      |      |      |      |altFDl|
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
- * |      |      |MACWIN|      |      |      |-------.    ,-------|      |      |      |      |      |      |
+ * |      |      |MACWIN|      |      |      |-------.    ,-------|      |      |      |      |  ~   |      |
  * |------+------+------+------+------+------|       |    |       |------+------+------+------+------+------|
  * |      |      |      |      |      |      |-------|    |-------|      |      |      |      |      |      |
  * `-----------------------------------------/       /     \      \-----------------------------------------'
@@ -130,9 +119,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  *            `----------------------------------'           '------''---------------------------'
  */
   [_ADJUST] = LAYOUT( \
-  XXXXXXX , ALGR(ES_MORD),  XXXXXXX ,  XXXXXXX , XXXXXXX, XXXXXXX,                     XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, \
-  RESET   , XXXXXXX,KC_QWERTY, XXXXXXX,XXXXXXX,XXXXXXX,                     XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, LALT(KC_DELETE), \
-  XXXXXXX , XXXXXXX, CG_TOGG, XXXXXXX, XXXXXXX,  XXXXXXX,                     XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, \
+  XXXXXXX , KC_EQL,  XXXXXXX ,  XXXXXXX , XXXXXXX, XXXXXXX,                     XXXXXXX, ALGR(ES_MORD), XXXXXXX, XXXXXXX, XXXXXXX, KC_PLUS, \
+  RESET   , XXXXXXX,KC_QWERTY, ALGR(ES_E),XXXXXXX,XXXXXXX,                     XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, LALT(KC_DELETE), \
+  XXXXXXX , XXXXXXX, CG_TOGG, XXXXXXX, XXXXXXX,  XXXXXXX,                     XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, ALGR(ES_NTIL), XXXXXXX, \
   XXXXXXX , XXXXXXX, XXXXXXX, XXXXXXX,    XXXXXXX,  XXXXXXX, XXXXXXX,     XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, \
                    _______, _______, _______, _______, _______,     _______, _______, _______, _______, _______ \
   )
@@ -368,15 +357,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 } else {
                     unregister_code(KC_GRV);
                 }
-            }
-            break;
-        case KC_DLINE:
-            if (record->event.pressed) {
-                register_mods(mod_config(MOD_LCTL));
-                register_code(KC_BSPC);
-            } else {
-                unregister_mods(mod_config(MOD_LCTL));
-                unregister_code(KC_BSPC);
             }
             break;
     }
