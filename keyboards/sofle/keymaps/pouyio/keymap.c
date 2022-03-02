@@ -19,7 +19,9 @@ enum custom_keycodes {
     KC_WBSPC, // word backspace
     KC_WDEL, // word delete
     KC_C_LT, // custom less than: < due to bug mac/linux not using the same key
-    KC_C_WINDOW // change window (win: alt+tab, mac: gui+tab)
+    KC_C_WINDOW, // change window (win: alt+tab, mac: gui+tab)
+    KC_C_TAB, // change tab (ctrl+tab)
+    KC_C_TAB_PREV // change tab window prev (shift+ctrl+tab),
 };
 
 enum tap_dances {
@@ -35,8 +37,7 @@ qk_tap_dance_action_t tap_dance_actions[] = {
 
 #define PRV_WPC LCTL(LGUI(KC_LEFT)) // previous workspace, combo for ctrl+super+left
 #define NXT_WPC LCTL(LGUI(KC_RGHT)) // next workspace, combo for ctrl+super+right
-#define KC_C_TAB LCTL(KC_TAB) // next tab, combo for ctrl+tab
-#define KC_C_TAB_PREV LSFT(LCTL(KC_TAB)) // previous tab, combo for shift+ctrl+tab
+
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 /*
  * QWERTY
@@ -235,6 +236,24 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                     register_code(KC_TAB);
                 }
             } else {
+                    unregister_code(KC_TAB);
+            }
+            break;
+        case KC_C_TAB:
+            if (record->event.pressed) {
+                    register_mods(MOD_LCTL);
+                    register_code(KC_TAB);
+            } else {
+                    unregister_code(KC_TAB);
+            }
+            break;
+        case KC_C_TAB_PREV:
+            if (record->event.pressed) {
+                    register_mods(MOD_LCTL);
+                    add_mods(MOD_LSFT);
+                    register_code(KC_TAB);
+            } else {
+                    del_mods(MOD_LSFT);
                     unregister_code(KC_TAB);
             }
             break;
