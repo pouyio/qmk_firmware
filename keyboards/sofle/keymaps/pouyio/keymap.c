@@ -147,11 +147,11 @@ static void print_status_narrow(void) {
         oled_write_ln_P(PSTR("  MAC"), false);
     }
 
-    oled_write_P(PSTR("\n\n\n\n"), false);
+    oled_write_P(PSTR("\n\n\n"), false);
     // Print current layer
     switch (get_highest_layer(layer_state)) {
         case _QWERTY:
-            oled_write_P(PSTR("BASE\n"), false);
+            oled_write_P(PSTR("     "), false);
             break;
         case _RAISE:
             oled_write_P(PSTR("RAISE"), false);
