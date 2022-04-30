@@ -24,7 +24,6 @@ enum custom_keycodes {
 
 typedef enum {
     TD_NONE,
-    TD_UNKNOWN,
     TD_TAP,
     TD_HOLD
 } td_state_t;
@@ -45,7 +44,7 @@ td_state_t cur_dance(qk_tap_dance_state_t *state) {
         if (!state->pressed) return TD_TAP;
         else return TD_HOLD;
     }
-    return TD_UNKNOWN;
+    return TD_NONE;
 }
 
 // Create an instance of 'td_tap_t' for the 'x' tap dance.
@@ -60,7 +59,6 @@ void bracket_finished(qk_tap_dance_state_t *state, void *user_data) {
         case TD_TAP: register_code16(ES_LBRC); break;
         case TD_HOLD: register_code16(ES_RBRC); break;
         case TD_NONE: break;
-        case TD_UNKNOWN: break;
     }
 }
 
@@ -69,7 +67,6 @@ void bracket_reset(qk_tap_dance_state_t *state, void *user_data) {
         case TD_TAP: unregister_code16(ES_LBRC); break;
         case TD_HOLD: unregister_code16(ES_RBRC); break;
         case TD_NONE: break;
-        case TD_UNKNOWN: break;
     }
     tap_state.state = TD_NONE;
 }
@@ -80,7 +77,6 @@ void brace_finished(qk_tap_dance_state_t *state, void *user_data) {
         case TD_TAP: register_code16(ES_LCBR); break;
         case TD_HOLD: register_code16(ES_RCBR); break;
         case TD_NONE: break;
-        case TD_UNKNOWN: break;
     }
 }
 
@@ -89,7 +85,6 @@ void brace_reset(qk_tap_dance_state_t *state, void *user_data) {
         case TD_TAP: unregister_code16(ES_LCBR); break;
         case TD_HOLD: unregister_code16(ES_RCBR); break;
         case TD_NONE: break;
-        case TD_UNKNOWN: break;
     }
     tap_state.state = TD_NONE;
 }
@@ -106,7 +101,7 @@ qk_tap_dance_action_t tap_dance_actions[] = {
 #define PRV_WPC LCTL(LGUI(KC_LEFT)) // previous workspace, combo for ctrl+super+left
 #define NXT_WPC LCTL(LGUI(KC_RGHT)) // next workspace, combo for ctrl+super+right
 
-#define PLUS LT(_QWERTY, KC_RBRC) // tap/hold for plus/apostrophe
+#define PLUS LT(_QWERTY, KC_RBRC) // tap/hold for +*
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 /*
@@ -135,7 +130,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * ,-----------------------------------------.                    ,-----------------------------------------.
  * |      |      |      |      |      |      |                    |      |      |      |      |      |      |
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
- * |      |  !   |    |PRV_WPC|NXT_WPC|      |                    |    & |   /  |  (   |   )  |   =  |WRDDEL|
+ * |      |  !   |   "  |PRV_WPC|NXT_WPC|      |                  |    & |   /  |  (   |   )  |   =  |WRDDEL|
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
  * |      |      |      |      |KC_C_WINDOW| |-------.    ,-------|      |   <  |  {}  |  []  |  +*  |   Ç  |
  * |------+------+------+------+------+------|       |    |       |------+------+------+------+------+------|
@@ -367,7 +362,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             return false;
         case PLUS:
             if (!record->tap.count && record->event.pressed) {
-                tap_code16(KC_RCBR); // Intercept hold function to send KC_RCBR
+                tap_code16(KC_RCBR); // Intercept hold to send *
                 return false;
             }
             return true;
