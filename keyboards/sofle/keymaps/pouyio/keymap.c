@@ -11,7 +11,8 @@ enum sofle_layers {
 enum custom_keycodes {
     KC_QWERTY = SAFE_RANGE,
     KC_LOWER = LT(_LOWER, KC_ESC),
-    KC_RAISE,
+    KC_RAISE = LT(_RAISE, ES_QUOT),
+    KC_RAISE_LOW = LT(_RAISE, KC_A), // should be ES_QUOT but C wont compile
     KC_PRVWD,
     KC_NXTWD,
     KC_WBSPC, // word backspace
@@ -38,6 +39,15 @@ typedef struct {
     bool is_press_action;
     td_state_t state;
 } td_tap_t;
+
+void custom_set_layer(bool activate, uint8_t layer) {
+    if (activate) {
+        layer_on(layer);
+    } else {
+        layer_off(layer);
+    }
+    update_tri_layer(_LOWER, _RAISE, _ADJUST);
+}
 
 td_state_t cur_dance(qk_tap_dance_state_t *state) {
     if (state->count == 1) {
@@ -113,7 +123,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
  * |LShift|   A  |   S  |   D  |   F  |   G  |-------.    ,-------|   H  |   J  |   K  |   L |   Ñ   |  ´   |
  * |------+------+------+------+------+------|  Mute |    |  Play |------+------+------+------+------+------|
- * | LCTR |   Z  |   X  |   C  |   V  |   B  |-------|    |-------|   N  |   M  |   ,  |   .  |  -  | RSft '|
+ * | LCTR |   Z  |   X  |   C  |   V  |   B  |-------|    |-------|   N  |   M  |   ,  |   .  |  -  | RSft  |
  * `-----------------------------------------/       /     \      \-----------------------------------------'
  *            |      | LGUI | LAlt |LOWER | / Space /       \Enter \  |RAISE | FDel |      |      |
  *            |      |      |      |      |/       /         \      \ |      |      |      |      |
@@ -123,8 +133,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   XXXXXXX,XXXXXXX, XXXXXXX, XXXXXXX,XXXXXXX,XXXXXXX,                     XXXXXXX,XXXXXXX,XXXXXXX,XXXXXXX,XXXXXXX,XXXXXXX, \
   KC_TAB,   KC_Q,   KC_W,    KC_E,    KC_R,    KC_T,                     KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,  KC_BSPC, \
   TD_SFT_CAP,  KC_A,  KC_S,  KC_D,    KC_F,    KC_G,                     KC_H,    KC_J,    KC_K,    KC_L,  ES_NTIL, KC_QUOT, \
-  KC_LCTRL,   KC_Z,   KC_X,  KC_C,   KC_V,   KC_B, KC_MUTE,     KC_MPLY,KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH,  RSFT_T(KC_MINS), \
-                 XXXXXXX,KC_LGUI,KC_LALT, KC_LOWER, KC_SPC,      KC_ENT,  KC_RAISE, KC_DELETE,    XXXXXXX, XXXXXXX\
+  KC_LCTRL,   KC_Z,   KC_X,  KC_C,   KC_V,   KC_B, KC_MUTE,     KC_MPLY,KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH,  KC_LSFT, \
+                 XXXXXXX,KC_LGUI,KC_LALT, KC_LOWER, KC_SPC,      KC_ENT,   KC_RAISE, KC_DELETE,    XXXXXXX, XXXXXXX\
 ),
 /* LOWER
  * ,-----------------------------------------.                    ,-----------------------------------------.
@@ -146,7 +156,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   _______,  S(ES_1), S(ES_2),  PRV_WPC,    NXT_WPC, _______,                   S(ES_6),  S(ES_7)  , S(ES_8),  S(ES_9) ,  S(ES_0), KC_WBSPC,\
   _______,  _______, _______,_______,KC_C_WINDOW, _______,                       _______, KC_C_LT, TD(BRCE), TD(BRKT), PLUS, KC_PIPE, \
   _______,  _______, _______,KC_C_TAB_PREV,KC_C_TAB, _______, _______,       _______, ES_GRV, _______, S(KC_COMM), S(KC_DOT), S(ES_MINS), S(ES_QUOT), \
-                       _______, _______, _______, _______, _______,       _______, _______, KC_WDEL, _______, _______\
+                       _______, _______, _______, _______, _______,       _______, KC_RAISE_LOW, KC_WDEL, _______, _______\
 ),
 /* RAISE
  * ,----------------------------------------.                     ,-----------------------------------------.
@@ -266,33 +276,34 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         case KC_LOWER:
             if (record->event.pressed) {
                 layer_on(_LOWER);
-                update_tri_layer(_LOWER, _RAISE, _ADJUST);
             } else {
                 unregister_mods(MOD_LGUI);
                 unregister_mods(MOD_LCTL);
                 unregister_mods(MOD_LALT);
                 layer_off(_LOWER);
-                update_tri_layer(_LOWER, _RAISE, _ADJUST);
             }
+            update_tri_layer(_LOWER, _RAISE, _ADJUST);
             break;
             // return false;
         case KC_RAISE:
-            if (record->event.pressed) {
-                layer_on(_RAISE);
-                update_tri_layer(_LOWER, _RAISE, _ADJUST);
+            custom_set_layer(record->event.pressed, _RAISE);
+            break;
+        case KC_RAISE_LOW:
+            // this should be the same as KC_RAISE but C wont compile because
+            // it detects the switch case as the same: ES_QUOT == S(ES_QUOT) == ES_QUES
+            if (record->tap.count > 0) {
+                if (record->event.pressed) {
+                    register_code16(ES_QUES);
+                } else {
+                    unregister_code16(ES_QUES);
+                }
+                return false;
             } else {
-                layer_off(_RAISE);
-                update_tri_layer(_LOWER, _RAISE, _ADJUST);
+                custom_set_layer(record->event.pressed, _RAISE);
             }
-            return false;
+            break;
         case _ADJUST:
-            if (record->event.pressed) {
-                layer_on(_ADJUST);
-                update_tri_layer(_LOWER, _RAISE, _ADJUST);
-            } else {
-                layer_off(_ADJUST);
-                update_tri_layer(_LOWER, _RAISE, _ADJUST);
-            }
+            custom_set_layer(record->event.pressed, _ADJUST);
             return false;
         case KC_C_WINDOW:
             if (record->event.pressed) {
