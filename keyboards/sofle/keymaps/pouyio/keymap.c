@@ -2,7 +2,6 @@
 #include "../../../../quantum/keymap_extras/keymap_spanish.h"
 
 enum sofle_layers {
-    /* _M_XYZ = Mac Os, _W_XYZ = Win/Linux */
     _QWERTY,
     _LOWER,
     _RAISE,
@@ -108,12 +107,6 @@ qk_tap_dance_action_t tap_dance_actions[] = {
 #define NXT_WPC LCTL(LGUI(KC_RGHT)) // next workspace, combo for ctrl+super+right
 
 #define PLUS LT(_QWERTY, KC_RBRC) // tap/hold for plus/apostrophe
-
-// prev/next word
-#define WIN_PREV_WORD LCTL(KC_LEFT)
-#define WIN_NEXT_WORD LCTL(KC_RIGHT)
-#define MAC_PREV_WORD LALT(KC_LEFT)
-#define MAC_NEXT_WORD LALT(KC_RIGHT)
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 /*
@@ -318,7 +311,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             } else {
                     unregister_code(KC_TAB);
             }
-            break;
+            return false;
         case KC_C_TAB:
             if (record->event.pressed) {
                     register_mods(MOD_LCTL);
@@ -336,77 +329,45 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                     del_mods(MOD_LSFT);
                     unregister_code(KC_TAB);
             }
-            break;
+            return false;
         case KC_PRVWD:
             if (record->event.pressed) {
-                register_code16(keymap_config.swap_lctl_lgui ? WIN_PREV_WORD : MAC_PREV_WORD);
+                register_code16(keymap_config.swap_lctl_lgui ? LCTL(KC_LEFT) : LALT(KC_LEFT));
             } else {
-                unregister_code16(keymap_config.swap_lctl_lgui ? WIN_PREV_WORD : MAC_PREV_WORD);
+                unregister_code16(keymap_config.swap_lctl_lgui ? LCTL(KC_LEFT) : LALT(KC_LEFT));
             }
             return false;
         case KC_NXTWD:
              if (record->event.pressed) {
-                register_code16(keymap_config.swap_lctl_lgui ? WIN_NEXT_WORD : MAC_NEXT_WORD);
+                register_code16(keymap_config.swap_lctl_lgui ? LCTL(KC_RIGHT) : LALT(KC_RIGHT));
             } else {
-                unregister_code16(keymap_config.swap_lctl_lgui ? WIN_NEXT_WORD : MAC_NEXT_WORD);
+                unregister_code16(keymap_config.swap_lctl_lgui ? LCTL(KC_RIGHT) : LALT(KC_RIGHT));
             }
             return false;
         case KC_WBSPC:
-             if (record->event.pressed) {
-                if (keymap_config.swap_lctl_lgui) {
-                    register_mods(MOD_LCTL);
-                    register_code(KC_BSPC);
-                } else {
-                    register_mods(MOD_LALT);
-                    register_code(KC_BSPC);
-                }
+            if (record->event.pressed) {
+                register_code16(keymap_config.swap_lctl_lgui ? LCTL(KC_BSPC) : LALT(KC_BSPC));
             } else {
-                if (keymap_config.swap_lctl_lgui) {
-                    unregister_mods(MOD_LCTL);
-                    unregister_code(KC_BSPC);
-                } else {
-                    unregister_mods(MOD_LALT);
-                    unregister_code(KC_BSPC);
-                }
+                unregister_code16(keymap_config.swap_lctl_lgui ? LCTL(KC_BSPC) : LALT(KC_BSPC));
             }
-            break;
+            return false;
         case KC_WDEL:
-             if (record->event.pressed) {
-                if (keymap_config.swap_lctl_lgui) {
-                    register_mods(MOD_LCTL);
-                    register_code(KC_DELETE);
-                } else {
-                    register_mods(MOD_LALT);
-                    register_code(KC_DELETE);
-                }
+            if (record->event.pressed) {
+                register_code16(keymap_config.swap_lctl_lgui ? LCTL(KC_DELETE) : LALT(KC_DELETE));
             } else {
-                if (keymap_config.swap_lctl_lgui) {
-                    unregister_mods(MOD_LCTL);
-                    unregister_code(KC_DELETE);
-                } else {
-                    unregister_mods(MOD_LALT);
-                    unregister_code(KC_DELETE);
-                }
+                unregister_code16(keymap_config.swap_lctl_lgui ? LCTL(KC_DELETE) : LALT(KC_DELETE));
             }
-            break;
+            return false;
         case KC_C_LT:
              if (record->event.pressed) {
-                if (keymap_config.swap_lctl_lgui) {
-                    register_code(KC_NUBS);
-                } else {
-                    register_code(KC_GRV);
-                }
+                register_code16(keymap_config.swap_lctl_lgui ? KC_NUBS : KC_GRV);
             } else {
-                if (keymap_config.swap_lctl_lgui) {
-                    unregister_code(KC_NUBS);
-                } else {
-                    unregister_code(KC_GRV);
-                }
+                unregister_code16(keymap_config.swap_lctl_lgui ? KC_NUBS : KC_GRV);
             }
-            break;
+            return false;
         case PLUS:
             if (!record->tap.count && record->event.pressed) {
-                tap_code16(KC_RCBR); // Intercept hold function to send Ctrl-X
+                tap_code16(KC_RCBR); // Intercept hold function to send KC_RCBR
                 return false;
             }
             return true;
