@@ -8,7 +8,7 @@ for more options.
 #define OLED_TIMEOUT 10000
 #define OLED_BRIGHTNESS 190
 #undef TAPPING_TERM
-#define TAPPING_TERM 125
+#define TAPPING_TERM 150
 
 
 //                          TAPPING_TERM
@@ -16,7 +16,7 @@ for more options.
 //   | +-------------+           |        |
 //   | | LT(2, KC_A) |           |        |
 //   | +-------------+           |        |
-//   |       +--------------+    |        |k'
+//   |       +--------------+    |        |
 //   |       | KC_L         |    |        |
 //   |       +--------------+    |        |
 //   +---------------------------|--------+
