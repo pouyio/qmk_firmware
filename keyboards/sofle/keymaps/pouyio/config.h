@@ -10,6 +10,18 @@ for more options.
 #undef TAPPING_TERM
 #define TAPPING_TERM 125
 
+
+//                          TAPPING_TERM
+//   +---------------------------|--------+
+//   | +-------------+           |        |
+//   | | LT(2, KC_A) |           |        |
+//   | +-------------+           |        |
+//   |       +--------------+    |        |k'
+//   |       | KC_L         |    |        |
+//   |       +--------------+    |        |
+//   +---------------------------|--------+
+#define HOLD_ON_OTHER_KEY_PRESS
+
 // Prevent normal rollover on alphas from accidentally triggering mods.
 #define IGNORE_MOD_TAP_INTERRUPT
 
