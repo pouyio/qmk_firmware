@@ -9,21 +9,3 @@ for more options.
 #define OLED_BRIGHTNESS 190
 #undef TAPPING_TERM
 #define TAPPING_TERM 150
-
-
-//                          TAPPING_TERM
-//   +---------------------------|--------+
-//   | +-------------+           |        |
-//   | | LT(2, KC_A) |           |        |
-//   | +-------------+           |        |
-//   |       +--------------+    |        |
-//   |       | KC_L         |    |        |
-//   |       +--------------+    |        |
-//   +---------------------------|--------+
-#define HOLD_ON_OTHER_KEY_PRESS
-
-// Prevent normal rollover on alphas from accidentally triggering mods.
-#define IGNORE_MOD_TAP_INTERRUPT
-
-// Enable rapid switch from tap to hold, disables double tap hold auto-repeat.
-#define TAPPING_FORCE_HOLD
