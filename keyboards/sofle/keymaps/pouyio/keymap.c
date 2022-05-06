@@ -24,7 +24,6 @@ enum custom_keycodes {
 };
 
 enum tap_dances {
-    SFT_CAP,
     BRKT,
     BRCE,
 };
@@ -40,7 +39,6 @@ void custom_set_layer(bool activate, uint8_t layer) {
 
 // Tap Dance definitions
 qk_tap_dance_action_t tap_dance_actions[] = {
-    [SFT_CAP] = ACTION_TAP_DANCE_DOUBLE(KC_LSFT, KC_CAPS), // shift on tap, caps lock on double tap
     [BRKT] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, bracket_finished, bracket_reset),
     [BRCE] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, brace_finished, brace_reset)
 };
@@ -207,8 +205,8 @@ void oled_task_user(void) {
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
      // Detect the activation of both Shifts 
-    if ((get_mods() & MOD_MASK_SHIFT) == MOD_MASK_SHIFT) { 
-        tap_code(KC_CAPS); 
+    if ((get_mods() & MOD_MASK_SHIFT) == MOD_MASK_SHIFT) {
+        tap_code(KC_CAPS);
     }
     switch (keycode) {
         case KC_QWERTY:
