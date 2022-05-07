@@ -43,8 +43,6 @@ qk_tap_dance_action_t tap_dance_actions[] = {
     [BRCE] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, brace_finished, brace_reset)
 };
 
-#define TD_SFT_CAP TD(SFT_CAP)
-
 #define PRV_WPC LCTL(LGUI(KC_LEFT)) // previous workspace, combo for ctrl+super+left
 #define NXT_WPC LCTL(LGUI(KC_RGHT)) // next workspace, combo for ctrl+super+right
 
