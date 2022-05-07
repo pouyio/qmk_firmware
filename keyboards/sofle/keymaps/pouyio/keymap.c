@@ -1,7 +1,6 @@
 #include QMK_KEYBOARD_H
-#include "../../../../quantum/keymap_extras/keymap_spanish.h"
-#include "pouyio_utils.h"
-
+#include "keymap_spanish.h"
+ 
 enum sofle_layers {
     _QWERTY,
     _LOWER,
@@ -37,6 +36,66 @@ void custom_set_layer(bool activate, uint8_t layer) {
     update_tri_layer(_LOWER, _RAISE, _ADJUST);
 }
 
+typedef enum {
+    TD_NONE,
+    TD_TAP,
+    TD_HOLD
+} td_state_t;
+
+typedef struct {
+    bool is_press_action;
+    td_state_t state;
+} td_tap_t;
+
+td_state_t cur_dance(qk_tap_dance_state_t *state) {
+    if (state->count == 1) {
+        if (!state->pressed) return TD_TAP;
+        else return TD_HOLD;
+    }
+    return TD_NONE;
+}
+
+static td_tap_t tap_state = {
+    .is_press_action = true,
+    .state = TD_NONE
+};
+
+void bracket_finished(qk_tap_dance_state_t *state, void *user_data) {
+    tap_state.state = cur_dance(state);
+    switch (tap_state.state) {
+        case TD_TAP: register_code16(ES_LBRC); break;
+        case TD_HOLD: register_code16(ES_RBRC); break;
+        case TD_NONE: break;
+    }
+}
+
+void bracket_reset(qk_tap_dance_state_t *state, void *user_data) {
+    switch (tap_state.state) {
+        case TD_TAP: unregister_code16(ES_LBRC); break;
+        case TD_HOLD: unregister_code16(ES_RBRC); break;
+        case TD_NONE: break;
+    }
+    tap_state.state = TD_NONE;
+}
+
+void brace_finished(qk_tap_dance_state_t *state, void *user_data) {
+    tap_state.state = cur_dance(state);
+    switch (tap_state.state) {
+        case TD_TAP: register_code16(ES_LCBR); break;
+        case TD_HOLD: register_code16(ES_RCBR); break;
+        case TD_NONE: break;
+    }
+}
+
+void brace_reset(qk_tap_dance_state_t *state, void *user_data) {
+    switch (tap_state.state) {
+        case TD_TAP: unregister_code16(ES_LCBR); break;
+        case TD_HOLD: unregister_code16(ES_RCBR); break;
+        case TD_NONE: break;
+    }
+    tap_state.state = TD_NONE;
+}
+
 // Tap Dance definitions
 qk_tap_dance_action_t tap_dance_actions[] = {
     [BRKT] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, bracket_finished, bracket_reset),
@@ -64,12 +123,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  *            |      |      |      |      |/       /         \      \ |      |      |      |      |
  *            `----------------------------------'           '------''---------------------------'
  */
-[_QWERTY] = LAYOUT( \
-  XXXXXXX,XXXXXXX, XXXXXXX, XXXXXXX,XXXXXXX,XXXXXXX,                     XXXXXXX,XXXXXXX,XXXXXXX,XXXXXXX,XXXXXXX,XXXXXXX, \
-  KC_TAB,   KC_Q,   KC_W,    KC_E,    KC_R,    KC_T,                     KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,  KC_BSPC, \
-  MT(MOD_LSFT, KC_ESC),  KC_A,  KC_S,  KC_D,    KC_F,    KC_G,                     KC_H,    KC_J,    KC_K,    KC_L,  ES_NTIL, KC_QUOT, \
-  KC_LCTRL,   KC_Z,   KC_X,  KC_C,   KC_V,   KC_B, KC_MUTE,     KC_MPLY,KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH,  KC_RSFT, \
-                 XXXXXXX,KC_LGUI,KC_LALT, KC_LOWER, KC_SPC,      KC_ENT,   KC_RAISE, KC_DELETE,    XXXXXXX, XXXXXXX\
+[_QWERTY] = LAYOUT(
+  XXXXXXX,XXXXXXX, XXXXXXX, XXXXXXX,XXXXXXX,XXXXXXX,                     XXXXXXX,XXXXXXX,XXXXXXX,XXXXXXX,XXXXXXX,XXXXXXX,
+  KC_TAB,   KC_Q,   KC_W,    KC_E,    KC_R,    KC_T,                     KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,  KC_BSPC,
+  MT(MOD_LSFT, KC_ESC),  KC_A,  KC_S,  KC_D,    KC_F,    KC_G,                     KC_H,    KC_J,    KC_K,    KC_L,  ES_NTIL, KC_QUOT,
+  KC_LCTRL,   KC_Z,   KC_X,  KC_C,   KC_V,   KC_B, KC_MUTE,     KC_MPLY,KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH,  KC_RSFT,
+                 XXXXXXX,KC_LGUI,KC_LALT, KC_LOWER, KC_SPC,      KC_ENT,   KC_RAISE, KC_DELETE,    XXXXXXX, XXXXXXX
 ),
 /* LOWER
  * ,-----------------------------------------.                    ,-----------------------------------------.
@@ -86,12 +145,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  *            `----------------------------------'           '------''----------------------------'
  *  SHIFT(`) = ^
  */
-[_LOWER] = LAYOUT( \
-  _______,  _______, _______, _______, _______ ,_______,                    _______,   _______,   _______,   _______, _______,  _______,\
-  _______,  S(ES_1), S(ES_2),  PRV_WPC,    NXT_WPC, _______,                   S(ES_6),  S(ES_7)  , S(ES_8),  S(ES_9) ,  S(ES_0), KC_WBSPC,\
-  _______,  _______, _______,_______,KC_C_WINDOW, _______,                       _______, KC_C_LT, TD(BRCE), TD(BRKT), PLUS, ES_QUOT, \
-  _______,  _______, _______,KC_C_TAB_PREV,KC_C_TAB, _______, _______,       _______, ES_GRV, _______, S(KC_COMM), S(KC_DOT), S(ES_MINS), _______, \
-                       _______, _______, _______, _______, _______,       _______, KC_RAISE, KC_WDEL, _______, _______\
+[_LOWER] = LAYOUT(
+  _______,  _______, _______, _______, _______ ,_______,                    _______,   _______,   _______,   _______, _______,  _______,
+  _______,  S(ES_1), S(ES_2),  PRV_WPC,    NXT_WPC, _______,                   S(ES_6),  S(ES_7)  , S(ES_8),  S(ES_9) ,  S(ES_0), KC_WBSPC,
+  _______,  _______, _______,_______,KC_C_WINDOW, _______,                       _______, KC_C_LT, TD(BRCE), TD(BRKT), PLUS, ES_QUOT,
+  _______,  _______, _______,KC_C_TAB_PREV,KC_C_TAB, _______, _______,       _______, ES_GRV, _______, S(KC_COMM), S(KC_DOT), S(ES_MINS), _______,
+                       _______, _______, _______, _______, _______,       _______, KC_RAISE, KC_WDEL, _______, _______
 ),
 /* RAISE
  * ,----------------------------------------.                     ,-----------------------------------------.
@@ -108,11 +167,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  *            `----------------------------------'           '------''---------------------------'
  */
 [_RAISE] = LAYOUT( \
-  _______,_______,_______, _______, _______, _______,                       _______, _______, _______, _______, _______, _______, \
-  _______, ALGR(ES_1), ALGR(ES_2),ALGR(ES_3),S(ES_4),S(ES_5),               _______, KC_PRVWD,  KC_UP, KC_NXTWD, _______, _______, \
-  _______, _______, _______,  _______, S(ES_QUOT), _______,                    _______, KC_LEFT, KC_DOWN,  KC_RGHT, _______, _______, \
-  _______, _______, _______, _______, _______, _______,  _______,    _______, _______, KC_HOME, _______, KC_END,  _______, _______, \
-                    _______, _______, _______, _______, _______,      _______, _______, _______, _______, _______ \
+  _______,_______,_______, _______, _______, _______,                       _______, _______, _______, _______, _______, _______,
+  _______, ALGR(ES_1), ALGR(ES_2),ALGR(ES_3),S(ES_4),S(ES_5),               _______, KC_PRVWD,  KC_UP, KC_NXTWD, _______, _______,
+  _______, _______, _______,  _______, S(ES_QUOT), _______,                    _______, KC_LEFT, KC_DOWN,  KC_RGHT, _______, _______,
+  _______, _______, _______, _______, _______, _______,  _______,    _______, _______, KC_HOME, _______, KC_END,  _______, _______,
+                    _______, _______, _______, _______, _______,      _______, _______, _______, _______, _______
 ),
 /* ADJUST
  * ,-----------------------------------------.                    ,-----------------------------------------.
@@ -129,11 +188,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  *            `----------------------------------'           '------''---------------------------'
  */
   [_ADJUST] = LAYOUT( \
-  XXXXXXX , XXXXXXX,  XXXXXXX ,  XXXXXXX , XXXXXXX, XXXXXXX,                  XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, \
-  RESET   , KC_EQL,KC_QWERTY, ALGR(ES_E),XXXXXXX,XXXXXXX,                    XXXXXXX, KC_7,     KC_8,     KC_9,    KC_0, XXXXXXX, \
-  XXXXXXX , ALGR(ES_MORD), CG_TOGG, XXXXXXX, KC_PLUS,  XXXXXXX,              XXXXXXX, KC_4,     KC_5,     KC_6, ALGR(ES_NTIL), XXXXXXX, \
-  XXXXXXX , XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,     XXXXXXX,XXXXXXX,KC_1,     KC_2,     KC_3, XXXXXXX, _______, \
-                   _______, _______, _______, _______, _______,     _______, _______, _______, _______, _______ \
+  XXXXXXX , XXXXXXX,  XXXXXXX ,  XXXXXXX , XXXXXXX, XXXXXXX,                  XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
+  RESET   , KC_EQL,KC_QWERTY, ALGR(ES_E),XXXXXXX,XXXXXXX,                    XXXXXXX, KC_7,     KC_8,     KC_9,    KC_0, XXXXXXX,
+  XXXXXXX , ALGR(ES_MORD), CG_TOGG, XXXXXXX, KC_PLUS,  XXXXXXX,              XXXXXXX, KC_4,     KC_5,     KC_6, ALGR(ES_NTIL), XXXXXXX,
+  XXXXXXX , XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,     XXXXXXX,XXXXXXX,KC_1,     KC_2,     KC_3, XXXXXXX, _______,
+                   _______, _______, _______, _______, _______,     _______, _______, _______, _______, _______
   )
 };
 
@@ -229,7 +288,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             custom_set_layer(record->event.pressed, _RAISE);
             break;
         case _ADJUST:
-            custom_set_layer(record->event.pressed, _ADJUST);
+            if (record->event.pressed) {
+                layer_on(_ADJUST);
+            } else
+                layer_off(_ADJUST);
             return false;
         case KC_C_WINDOW:
             if (record->event.pressed) {
