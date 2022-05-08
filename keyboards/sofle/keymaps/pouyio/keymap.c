@@ -435,8 +435,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 if (!is_kc_window_active) {
                     is_kc_window_active = true;
                     register_code(KC_LCTL);
-                    register_code(KC_LSFT);
                 }
+                register_code(KC_LSFT);
                 register_code(KC_TAB);
             } else {
                 unregister_code(KC_TAB);
