@@ -19,11 +19,6 @@ enum sofle_layers {
 enum custom_keycodes {
     KC_QWERTY = SAFE_RANGE,
     KC_M_QWERTY,
-    KC_LOWER,
-    KC_M_LOWER,
-    KC_RAISE,
-    KC_M_RAISE,
-    KC_ADJUST,
     KC_C_WINDOW, // change window (win: alt+tab)
     KC_M_C_WINDOW, // change window (mac: gui+tab)
     KC_C_TAB, // change tab (ctrl+tab)
@@ -166,7 +161,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   _______,  S(ES_1), S(ES_2),  PRV_WPC,    NXT_WPC, _______,                   S(ES_6),  S(ES_7)  , S(ES_8),  S(ES_9) ,  S(ES_0), WBSPC,
   _______,  _______, _______,_______,KC_C_WINDOW, _______,                       _______, KC_NUBS, TD(BRCE), TD(BRKT), PLUS, KC_PIPE,
   _______,  _______, _______,KC_C_TAB_PREV,KC_C_TAB, _______, _______,       _______, ES_GRV, _______, S(KC_COMM), S(KC_DOT), S(ES_MINS), _______,
-                       _______, _______, _______, _______, _______,       _______, KC_RAISE, WDEL, _______, _______
+                       _______, _______, _______, _______, _______,       _______, MO(_RAISE), WDEL, _______, _______
 ),
 /* M_LOWER
  * ,-----------------------------------------.                    ,-----------------------------------------.
@@ -188,7 +183,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   _______,  S(ES_1), S(ES_2),  PRV_WPC,    NXT_WPC, _______,                   S(ES_6),  S(ES_7)  , S(ES_8),  S(ES_9) ,  S(ES_0), M_WBSPC,
   _______,  _______, _______,_______,KC_M_C_WINDOW, _______,                       _______, KC_GRV, TD(BRCE), TD(BRKT), PLUS, KC_PIPE,
   _______,  _______, _______,KC_C_TAB_PREV,KC_C_TAB, _______, _______,       _______, ES_GRV, _______, S(KC_COMM), S(KC_DOT), S(ES_MINS), _______,
-                       _______, _______, _______, _______, _______,       _______, KC_M_RAISE, M_WDEL, _______, _______
+                       _______, _______, _______, _______, _______,       _______, MO(_M_RAISE), M_WDEL, _______, _______
 ),
 /* RAISE
  * ,----------------------------------------.                     ,-----------------------------------------.
@@ -209,7 +204,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   _______, ALGR(ES_1), ALGR(ES_2),ALGR(ES_3),S(ES_4),S(ES_5),               _______, PRVWD,  KC_UP, NXTWD, _______, _______,
   _______, _______, _______,  _______, S(ES_QUOT), _______,                    _______, KC_LEFT, KC_DOWN,  KC_RGHT, _______, _______,
   _______, _______, _______, _______, _______, _______,  _______,    _______, _______, KC_HOME, _______, KC_END,  _______, _______,
-                    _______, _______, _______, KC_LOWER, _______,      _______, _______, _______, _______, _______
+                    _______, _______, _______, MO(_LOWER), _______,      _______, _______, _______, _______, _______
 ),
 /* M_RAISE
  * ,----------------------------------------.                     ,-----------------------------------------.
@@ -230,7 +225,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   _______, ALGR(ES_1), ALGR(ES_2),ALGR(ES_3),S(ES_4),S(ES_5),               _______, M_PRVWD,  KC_UP, M_NXTWD, _______, _______,
   _______, _______, _______,  _______, S(ES_QUOT), _______,                    _______, KC_LEFT, KC_DOWN,  KC_RGHT, _______, _______,
   _______, _______, _______, _______, _______, _______,  _______,    _______, _______, KC_HOME, _______, KC_END,  _______, _______,
-                    _______, _______, _______, KC_M_LOWER, _______,      _______, _______, _______, _______, _______
+                    _______, _______, _______, MO(_M_LOWER), _______,      _______, _______, _______, _______, _______
 ),
 /* ADJUST
  * ,-----------------------------------------.                    ,-----------------------------------------.
@@ -331,13 +326,20 @@ bool oled_task_user(void) {
 
 #endif
 
-// unregister mods from K_C_WINDOW and 
 layer_state_t layer_state_set_user(layer_state_t  state) {
+    // unregister mods from K_C_WINDOW and  KC_C_TAB
      if (is_kc_window_active) {
         unregister_code(KC_LALT);
         unregister_code(KC_LCTL);
         unregister_code(KC_LGUI);
         is_kc_window_active = false;
+    }
+
+    // update _ADJUST layer
+    if (IS_LAYER_ON(_LOWER) || IS_LAYER_ON(_RAISE)) {
+        state = update_tri_layer_state(state, _LOWER, _RAISE, _ADJUST);
+    } else if (IS_LAYER_ON(_M_LOWER) || IS_LAYER_ON(_M_RAISE)) {
+        state = update_tri_layer_state(state, _M_LOWER, _M_RAISE, _ADJUST);
     }
     return state;
 }
@@ -356,45 +358,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         case KC_M_QWERTY:
             if (record->event.pressed) {
                 set_single_persistent_default_layer(_M_QWERTY);
-            }
-            return false;
-        case KC_LOWER:
-            if (record->event.pressed) {
-                layer_on(_LOWER);
-            } else {
-                layer_off(_LOWER);
-            }
-            update_tri_layer(_LOWER, _RAISE, _ADJUST);
-            return false;
-        case KC_RAISE:
-            if (record->event.pressed) {
-                layer_on(_RAISE);
-            } else {
-                layer_off(_RAISE);
-            }
-            update_tri_layer(_LOWER, _RAISE, _ADJUST);
-            return false;
-        case KC_M_LOWER:
-            if (record->event.pressed) {
-                layer_on(_M_LOWER);
-            } else {
-                layer_off(_M_LOWER);
-            }
-            update_tri_layer(_M_LOWER, _M_RAISE, _ADJUST);
-            return false;
-        case KC_M_RAISE:
-            if (record->event.pressed) {
-                layer_on(_M_RAISE);
-            } else {
-                layer_off(_M_RAISE);
-            }
-            update_tri_layer(_M_LOWER, _M_RAISE, _ADJUST);
-            return false;
-        case KC_ADJUST:
-            if (record->event.pressed) {
-                layer_on(_ADJUST);
-            } else {
-                layer_off(_ADJUST);
             }
             return false;
         case KC_C_WINDOW:
