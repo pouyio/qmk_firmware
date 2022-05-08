@@ -19,10 +19,10 @@ enum sofle_layers {
 enum custom_keycodes {
     KC_QWERTY = SAFE_RANGE,
     KC_M_QWERTY,
-    KC_C_WINDOW, // change window (win: alt+tab)
+    KC_C_WINDOW,   // change window (win: alt+tab)
     KC_M_C_WINDOW, // change window (mac: gui+tab)
-    KC_C_TAB, // change tab (ctrl+tab)
-    KC_C_TAB_PREV // change tab window prev (shift+ctrl+tab),
+    KC_C_TAB,      // change tab (ctrl+tab)
+    KC_C_TAB_PREV  // change tab window prev (shift+ctrl+tab),
 };
 
 enum tap_dances {
@@ -37,14 +37,16 @@ typedef enum {
 } td_state_t;
 
 typedef struct {
-    bool is_press_action;
+    bool       is_press_action;
     td_state_t state;
 } td_tap_t;
 
 td_state_t cur_dance(qk_tap_dance_state_t *state) {
     if (state->count == 1) {
-        if (!state->pressed) return TD_TAP;
-        else return TD_HOLD;
+        if (!state->pressed)
+            return TD_TAP;
+        else
+            return TD_HOLD;
     }
     return TD_NONE;
 }
@@ -57,17 +59,27 @@ static td_tap_t tap_state = {
 void bracket_finished(qk_tap_dance_state_t *state, void *user_data) {
     tap_state.state = cur_dance(state);
     switch (tap_state.state) {
-        case TD_TAP: register_code16(ES_LBRC); break;
-        case TD_HOLD: register_code16(ES_RBRC); break;
-        case TD_NONE: break;
+        case TD_TAP:
+            register_code16(ES_LBRC);
+            break;
+        case TD_HOLD:
+            register_code16(ES_RBRC);
+            break;
+        case TD_NONE:
+            break;
     }
 }
 
 void bracket_reset(qk_tap_dance_state_t *state, void *user_data) {
     switch (tap_state.state) {
-        case TD_TAP: unregister_code16(ES_LBRC); break;
-        case TD_HOLD: unregister_code16(ES_RBRC); break;
-        case TD_NONE: break;
+        case TD_TAP:
+            unregister_code16(ES_LBRC);
+            break;
+        case TD_HOLD:
+            unregister_code16(ES_RBRC);
+            break;
+        case TD_NONE:
+            break;
     }
     tap_state.state = TD_NONE;
 }
@@ -75,17 +87,27 @@ void bracket_reset(qk_tap_dance_state_t *state, void *user_data) {
 void brace_finished(qk_tap_dance_state_t *state, void *user_data) {
     tap_state.state = cur_dance(state);
     switch (tap_state.state) {
-        case TD_TAP: register_code16(ES_LCBR); break;
-        case TD_HOLD: register_code16(ES_RCBR); break;
-        case TD_NONE: break;
+        case TD_TAP:
+            register_code16(ES_LCBR);
+            break;
+        case TD_HOLD:
+            register_code16(ES_RCBR);
+            break;
+        case TD_NONE:
+            break;
     }
 }
 
 void brace_reset(qk_tap_dance_state_t *state, void *user_data) {
     switch (tap_state.state) {
-        case TD_TAP: unregister_code16(ES_LCBR); break;
-        case TD_HOLD: unregister_code16(ES_RCBR); break;
-        case TD_NONE: break;
+        case TD_TAP:
+            unregister_code16(ES_LCBR);
+            break;
+        case TD_HOLD:
+            unregister_code16(ES_RCBR);
+            break;
+        case TD_NONE:
+            break;
     }
     tap_state.state = TD_NONE;
 }
@@ -301,7 +323,7 @@ static void print_status_narrow(void) {
     }
     oled_write_P(PSTR("\n\n\n"), false);
     led_t led_usb_state = host_keyboard_led_state();
-    if(led_usb_state.caps_lock) {
+    if (led_usb_state.caps_lock) {
         oled_write_ln_P(PSTR("CAPS"), true);
     } else {
         oled_write_ln_P(PSTR("     "), false);
@@ -326,9 +348,9 @@ bool oled_task_user(void) {
 
 #endif
 
-layer_state_t layer_state_set_user(layer_state_t  state) {
+layer_state_t layer_state_set_user(layer_state_t state) {
     // unregister mods from K_C_WINDOW and  KC_C_TAB
-     if (is_kc_window_active) {
+    if (is_kc_window_active) {
         unregister_code(KC_LALT);
         unregister_code(KC_LCTL);
         unregister_code(KC_LGUI);
